@@ -142,20 +142,25 @@ These parameters are set for the following reasons:
 - Install Windows on the new VM
 
   - At the first start, the Windows logo may be briefly shown, and then a black screen with a blinking cursor may appear and stay for a few minutes. This is normal, and you just have to wait until the installation window appears.
-  - The installation will run mostly as usual, but automatic reboots will halt the qube - just restart it again and again until the installation is finished. Note, however, that for these restarts, the parameter `--cdrom` **must not** be used, because otherwise the installation will start all over.
-  - Install on first disk.
   - **For Windows 11 only**: Windows 11 requires TPM 2.0, which currently is not supported from Xen. In Order to install Windows 11 under Qubes, the check for TPM in the Windows installer has to be disabled:
  
-    -  When you start setup without having a TPM, you get an error message like *This PC does not fulfil the minimum requirements for Windows 11*.
-    -  Typing Shift-F10 then opens a console window.
-    -  Here you type `regedit` to start the registry editor.
-    -  There you position to the key `HKEY_LOCAL_MACHINE\SYSTEM\Setup`.
-    -  Now create the key `LabConfig`.
+    -  Type Shift-F10 to open a console window.
+    -  Type `regedit` to start the registry editor.
+    -  Position to the key `HKEY_LOCAL_MACHINE\SYSTEM\Setup`.
+    -  Create the key `LabConfig`.
     -  Position to this key and create 3 DWORD values called `BypassTPMCheck`, `BypassSecureBootCheck` and `BypassRAMCheck` and set each value to `1`.
     -  Close the registry editor and console windows.
-    -  In the setup window, hit the left arrow in the left upper corner. You will then return into the setup, which will continue normally and install Windows 11 without TPM 2.0.
-   
+
     :warning: **Caution:** This temporary patch may cease to work if it so pleases Microsoft some time.
+
+  - On systems shipped with a Windows license, the product key may be read from flash via root in dom0:
+
+    `strings < /sys/firmware/acpi/tables/MSDM`
+
+    Alternatively, you can also try a Windows 7 license key (as of 2018/11 they are still accepted for a free upgrade to Windows 10).
+
+  - The installation will run mostly as usual, but automatic reboots will halt the qube - just restart it again and again until the installation is finished. Note, however, that for these restarts, the parameter `--cdrom` **must not** be used, because otherwise the installation will start all over.
+  - Install on first disk.
     
     The installation of Windows 11 may require an internet connection to grab a Microsoft ID. This is currently true only for the home addition, but will probably extend to the Pro edition, too. A workaround to bypass the internet connection requirements of the Windows 11 setup has been published that currently works for version 21H2 but may be blocked some time in the future by Microsoft:
     
@@ -172,12 +177,6 @@ These parameters are set for the following reasons:
     - Click `Next`. A screen appears saying "Who's going to use this device?" This is the local account creation screen.
     - Enter the username you want to use and click `Next`.
     - Enter a password and click `Next`. You can leave the field blank but it's not recommended.
-
-- On systems shipped with a Windows license, the product key may be read from flash via root in dom0:
-
-    `strings < /sys/firmware/acpi/tables/MSDM`
-
-    Alternatively, you can also try a Windows 7 license key (as of 2018/11 they are still accepted for a free upgrade to Windows 10).
     
  - The VM will shutdown after the installer completes the extraction of Windows installation files. It's a good idea to clone the VM now (eg. `qvm-clone WindowsNew WindowsNewbkp1`). Then, (re)start the VM via the Qubes Manager or with `qvm-start WindowsNew` from a dom0 terminal (without the `--cdrom` parameter!).
 
